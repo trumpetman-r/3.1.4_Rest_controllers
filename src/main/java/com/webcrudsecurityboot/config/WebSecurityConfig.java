@@ -19,7 +19,7 @@ import org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect;
 @EnableWebSecurity
 @ComponentScan("com.webcrudsecurityboot")
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    private final UserDetailsService userDetailsService; // сервис, с помощью которого тащим пользователя
+    private final UserDetailsService userDetailsService;
     private final LoginSuccessHandler loginSuccessHandler;
 
     @Autowired
@@ -30,7 +30,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     public void configureGlobalSecurity(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder()); // конфигурация для прохождения аутентификации
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
 
     @Override
@@ -45,26 +45,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated();
 
         httpSecurity.formLogin()
-                //указываем логику обработки при логине
                 .successHandler(loginSuccessHandler)
-                // Указываем параметры логина и пароля с формы логина
                 .usernameParameter("email")
                 .passwordParameter("password")
-//                .usernameParameter("j_username")
-//                .passwordParameter("j_password")
-                //укзываем форму логина
                 .loginPage("/login")
-                // даем доступ к форме логина всем
                 .permitAll();
 
         httpSecurity.logout()
-                // разрешаем делать логаут всем
                 .permitAll()
-                // указываем URL логаута
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                //.logout()
                 .logoutUrl("/logout")
-                // указываем URL при удачном логауте
                 .logoutSuccessUrl("/login");
     }
 

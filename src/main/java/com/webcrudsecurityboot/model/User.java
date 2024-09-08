@@ -2,10 +2,11 @@ package com.webcrudsecurityboot.model;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import javax.persistence.*;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Collection;
 import java.util.HashSet;
@@ -18,42 +19,45 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column
-    @NotEmpty(message = "Empty values not allowed")
-    @Size(min = 2, max = 30, message = "Name should be between 2 and 30 character")
-    private String name;
-    @Column
-    @NotEmpty(message = "Empty values not allowed")
-    private String surName;
-    @Column(unique = true)
-    @NotEmpty(message = "Empty values not allowed")
-    @Email(message = "Not correct email entered")
-    private String email;
-    @Column
-    @Min(value = 0, message = "Age must be greater than 0")
-    private int age;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "tab_users_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles = new HashSet<>();
-    @Column
-    @NotEmpty(message = "Empty values not allowed")
-    @Size(min = 6, max = 256, message = "Password should be between 6 and 30 character")
+    @NotEmpty(message = "Name cannot be empty")
+    @Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters")
+    private String name;
+
+    @NotEmpty(message = "Surname cannot be empty")
+    @Size(min = 2, max = 50, message = "Surname must be between 2 and 50 characters")
+    private String surName;
+
+    @NotEmpty(message = "Email cannot be empty")
+    @Email(message = "Email should be valid")
+    @Column(unique = true)
+    private String email;
+
+    @NotNull(message = "Age cannot be null")
+    private Integer age;
+
+    @NotEmpty(message = "Password cannot be empty")
+    @Size(min = 5, message = "Password must be at least 5 characters long")
     private String password;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "tab_users_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
 
     public User() {
     }
 
-    public User(Long id, String name, String surName, String email, int age, Set<Role> roles, String password) {
-        this.id = id;
+    public User(String name, String surName, String email, Integer age, String password, Set<Role> roles) {
         this.name = name;
         this.surName = surName;
         this.email = email;
         this.age = age;
-        this.roles = roles;
         this.password = password;
+        this.roles = roles;
     }
 
     public Long getId() {
@@ -88,12 +92,20 @@ public class User implements UserDetails {
         this.email = email;
     }
 
-    public int getAge() {
+    public Integer getAge() {
         return age;
     }
 
-    public void setAge(int age) {
+    public void setAge(Integer age) {
         this.age = age;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Set<Role> getRoles() {
@@ -104,24 +116,14 @@ public class User implements UserDetails {
         this.roles = roles;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return getRoles();
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
+        return roles;
     }
 
     @Override
     public String getUsername() {
-        return name;
+        return email;
     }
 
     @Override
@@ -148,13 +150,12 @@ public class User implements UserDetails {
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", username='" + name + '\'' +
-                ", lastName='" + surName + '\'' +
-                ", ager='" + age + '\'' +
+                ", name='" + name + '\'' +
+                ", surName='" + surName + '\'' +
                 ", email='" + email + '\'' +
+                ", age=" + age +
                 ", password='" + password + '\'' +
                 ", roles=" + roles +
                 '}';
     }
-
 }
