@@ -1,7 +1,6 @@
 package com.webcrudsecurityboot.service;
 
 import com.webcrudsecurityboot.model.User;
-
 import java.util.List;
 
 public interface UserService {
@@ -9,5 +8,5 @@ public interface UserService {
     User getUserById(Long id);
     void saveUser(User user);
     void updateUser(User user);
-    void deleteUser(Long id);
+    void deleteUserById(Long id);
 }

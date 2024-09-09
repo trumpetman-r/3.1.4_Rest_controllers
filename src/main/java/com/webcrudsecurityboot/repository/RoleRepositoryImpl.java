@@ -15,41 +15,31 @@ public class RoleRepositoryImpl implements RoleRepository {
     private EntityManager entityManager;
 
     @Override
-    public List<Role> getAllRoles() {
+    public List<Role> findAllRoles() {
         return entityManager.createQuery("from Role", Role.class).getResultList();
     }
 
     @Override
-    public Role show(Long id) {
-        return entityManager.find(Role.class, id);
+    public Optional<Role> findRoleById(Long id) {
+        Role role = entityManager.find(Role.class, id);
+        return Optional.ofNullable(role);
     }
 
     @Override
-    public void save(Role role) {
+    public void saveRole(Role role) {
         entityManager.persist(role);
     }
 
     @Override
-    public void update(Role updatedRole) {
+    public void updateRole(Role updatedRole) {
         entityManager.merge(updatedRole);
     }
 
     @Override
-    public void delete(Long id) {
-        Role role = show(id);
+    public void deleteRoleById(Long id) {
+        Role role = entityManager.find(Role.class, id);
         if (role != null) {
             entityManager.remove(role);
         }
-    }
-
-    @Override
-    public List<Role> findAll() {
-        return entityManager.createQuery("from Role", Role.class).getResultList();
-    }
-
-    @Override
-    public Optional<Role> findById(Long id) {
-        Role role = entityManager.find(Role.class, id);
-        return Optional.ofNullable(role);
     }
 }

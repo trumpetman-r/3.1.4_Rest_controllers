@@ -15,54 +15,36 @@ public class UserRepositoryImpl implements UserRepository {
     private EntityManager entityManager;
 
     @Override
-    public List<User> getAllUsers() {
+    public List<User> findAllUsers() {
         return entityManager.createQuery("from User", User.class).getResultList();
     }
 
     @Override
-    public User show(Long id) {
-        return entityManager.find(User.class, id);
-    }
-
-    @Override
-    public void save(User user) {
-        entityManager.persist(user);
-    }
-
-    @Override
-    public void update(User updatedUser) {
-        entityManager.merge(updatedUser);
-    }
-
-    @Override
-    public void delete(Long id) {
-        User user = show(id);
-        if (user != null) {
-            entityManager.remove(user);
-        }
-    }
-
-    @Override
-    public List<User> findAll() {
-        return entityManager.createQuery("from User", User.class).getResultList();
-    }
-
-    @Override
-    public Optional<User> findById(Long id) {
+    public Optional<User> findUserById(Long id) {
         User user = entityManager.find(User.class, id);
         return Optional.ofNullable(user);
     }
 
     @Override
-    public void deleteById(Long id) {
-        User user = findById(id).orElse(null);
+    public void saveUser(User user) {
+        entityManager.persist(user);
+    }
+
+    @Override
+    public void updateUser(User updatedUser) {
+        entityManager.merge(updatedUser);
+    }
+
+    @Override
+    public void deleteUserById(Long id) {
+        User user = entityManager.find(User.class, id);
         if (user != null) {
             entityManager.remove(user);
         }
     }
 
     @Override
-    public User findByName(String email) {
+    public User findUserByEmail(String email) {
         return entityManager.createQuery("from User where email = :email", User.class)
                 .setParameter("email", email)
                 .getSingleResult();

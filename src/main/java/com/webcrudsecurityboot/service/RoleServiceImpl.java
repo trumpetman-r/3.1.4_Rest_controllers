@@ -21,18 +21,30 @@ public class RoleServiceImpl implements RoleService {
     @Override
     @Transactional
     public List<Role> getAllRoles() {
-        return roleRepository.findAll();
+        return roleRepository.findAllRoles();
     }
 
     @Override
     @Transactional
     public Role getRoleById(Long id) {
-        return roleRepository.findById(id).orElse(null);
+        return roleRepository.findRoleById(id).orElse(null);
     }
 
     @Override
     @Transactional
     public void saveRole(Role role) {
-        roleRepository.save(role);
+        roleRepository.saveRole(role);
+    }
+
+    @Override
+    @Transactional
+    public void updateRole(Role role) {
+        roleRepository.updateRole(role);
+    }
+
+    @Override
+    @Transactional
+    public void deleteRoleById(Long id) {
+        roleRepository.deleteRoleById(id);
     }
 }

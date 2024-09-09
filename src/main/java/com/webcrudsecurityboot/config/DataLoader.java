@@ -1,42 +1,22 @@
 package com.webcrudsecurityboot.config;
 
-import com.webcrudsecurityboot.model.Role;
-import com.webcrudsecurityboot.model.User;
-import com.webcrudsecurityboot.service.RoleService;
-import com.webcrudsecurityboot.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.Set;
 
 @Component
 public class DataLoader {
 
-    private final UserService userService;
-    private final RoleService roleService;
+    private final DatabaseInitializer databaseInitializer;
 
     @Autowired
-    public DataLoader(UserService userService, RoleService roleService) {
-        this.userService = userService;
-        this.roleService = roleService;
+    public DataLoader(DatabaseInitializer databaseInitializer) {
+        this.databaseInitializer = databaseInitializer;
     }
 
     @PostConstruct
-    public void fillDataBase() {
-        Role roleAdmin = new Role("ADMIN");
-        roleService.saveRole(roleAdmin);
-
-        Role roleUser = new Role("USER");
-        roleService.saveRole(roleUser);
-
-        User user1 = new User("Max", "Ivanov", "ivanov@mail.ru", 40, "root123", Set.of(roleAdmin));
-        userService.saveUser(user1);
-
-        User user2 = new User("Sergey", "Petrov", "petrov@mail.ru", 25, "root123", Set.of(roleUser));
-        userService.saveUser(user2);
-
-        User user3 = new User("Anastasiya", "Egorova", "egorova@mail.ru", 27, "root123", Set.of(roleUser, roleAdmin));
-        userService.saveUser(user3);
+    public void init() {
+        databaseInitializer.populateDatabase();
     }
 }
