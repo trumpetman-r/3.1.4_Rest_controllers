@@ -1,6 +1,8 @@
 package com.webcrudsecurityboot.service;
 
+import com.webcrudsecurityboot.model.Role;
 import com.webcrudsecurityboot.model.User;
+
 import java.util.List;
 
 public interface UserService {
@@ -10,4 +12,5 @@ public interface UserService {
     void saveUser(User user);
     void updateUser(User user);
     void deleteUserById(Long id);
+    void saveRole(Role role);
 }

@@ -23,7 +23,6 @@ public class UserController {
     @GetMapping("/me")
     public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUsername = authentication.getName();
-        return userService.getUserByEmail(currentUsername);
+        return userService.getUserByEmail(authentication.getName());
     }
 }
