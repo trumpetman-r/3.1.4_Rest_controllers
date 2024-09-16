@@ -2,26 +2,24 @@ package com.webcrudsecurityboot.service;
 
 import com.webcrudsecurityboot.model.Role;
 import com.webcrudsecurityboot.model.User;
+import com.webcrudsecurityboot.repository.RoleRepository;
 import com.webcrudsecurityboot.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final RoleRepository roleRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
     }
 
     @Override
@@ -60,6 +58,16 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void saveRole(Role role) {
-        entityManager.persist(role);
+        roleRepository.save(role);
+    }
+
+    @Override
+    public List<Role> getAllRoles() {
+        return roleRepository.findAll();
+    }
+
+    @Override
+    public Role getRoleById(Long id) {
+        return roleRepository.findById(id).orElse(null);
     }
 }
