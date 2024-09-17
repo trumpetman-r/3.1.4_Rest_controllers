@@ -7,6 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validator;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,10 +19,15 @@ import java.util.Set;
 public class DatabaseInitializer {
 
     private final UserService userService;
+    private final Validator validator;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
-    public DatabaseInitializer(UserService userService) {
+    public DatabaseInitializer(UserService userService, Validator validator) {
         this.userService = userService;
+        this.validator = validator;
     }
 
     @Transactional
@@ -25,8 +35,8 @@ public class DatabaseInitializer {
         Role roleAdmin = new Role("ROLE_ADMIN");
         Role roleUser = new Role("ROLE_USER");
 
-        userService.saveRole(roleAdmin);
-        userService.saveRole(roleUser);
+        entityManager.persist(roleAdmin);
+        entityManager.persist(roleUser);
 
         Set<Role> adminRoles = new HashSet<>();
         adminRoles.add(roleAdmin);
@@ -38,12 +48,23 @@ public class DatabaseInitializer {
         adminUserRoles.add(roleAdmin);
         adminUserRoles.add(roleUser);
 
-        User user1 = new User("Max", "Ivanov", "ivanov@mail.ru", 40, "root123", adminRoles);
-        User user2 = new User("Sergey", "Petrov", "petrov@mail.ru", 25, "root123", userRoles);
-        User user3 = new User("Anastasiya", "Egorova", "egorova@mail.ru", 27, "root123", adminUserRoles);
+        User admin = new User("admin", "admin@example.com", "password", adminRoles);
+        User user = new User("user", "user@example.com", "password", userRoles);
+        User adminUser = new User("adminuser", "adminuser@example.com", "password", adminUserRoles);
 
-        userService.saveUser(user1);
-        userService.saveUser(user2);
-        userService.saveUser(user3);
+        validateAndSaveUser(admin);
+        validateAndSaveUser(user);
+        validateAndSaveUser(adminUser);
+    }
+
+    private void validateAndSaveUser(User user) {
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        if (!violations.isEmpty()) {
+            for (ConstraintViolation<User> violation : violations) {
+                System.out.println(violation.getMessage());
+            }
+            throw new ConstraintViolationException(violations);
+        }
+        userService.saveUser(user);
     }
 }

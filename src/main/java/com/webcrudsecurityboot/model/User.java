@@ -60,6 +60,15 @@ public class User implements UserDetails {
         this.roles = roles;
     }
 
+    public User(String name, String email, String password, Set<Role> roles) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.roles = roles;
+        this.surName = "DefaultSurname"; // Добавьте значение по умолчанию
+        this.age = 30; // Добавьте значение по умолчанию
+    }
+
     public Long getId() {
         return id;
     }
